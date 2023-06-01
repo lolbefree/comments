@@ -1,0 +1,15 @@
+<h3>{{ comment.text }}</h3>
+
+<ul>
+  {% for reply in replies %}
+    <li>{{ reply.text }}</li>
+  {% empty %}
+    <li>No replies yet.</li>
+  {% endfor %}
+</ul>
+
+<form method="POST" action="{% url 'create_reply' comment.id %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Reply</button>
+</form>

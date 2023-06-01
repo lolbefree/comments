@@ -6,3 +6,7 @@ django-recaptcha==3.0.0
 soupsieve==2.4.1
 sqlparse==0.4.4
 typing_extensions==4.6.2
+gunicorn
+dj_static
+
+rea
