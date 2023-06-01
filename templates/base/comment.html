@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>{% block title %}Comments{% endblock %}</title>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+
+</head>
+<body>
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">Comments</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const commentButton = document.getElementById('commentButton');
+            const commentFormContainer = document.getElementById('commentFormContainer');
+            const cancelButton = document.getElementById('cancelButton');
+
+            commentButton.addEventListener('click', function () {
+                commentFormContainer.style.display = 'block';
+            });
+
+            cancelButton.addEventListener('click', function () {
+                commentFormContainer.style.display = 'none';
+            });
+            commentButton.addEventListener('click', function () {
+                commentButton.style.display = 'none';  // Hide the commentButton
+                commentFormContainer.style.display = 'block';  // Show the commentFormContainer
+            });
+            cancelButton.addEventListener('click', function () {
+                commentButton.style.display = 'block';  // Show the commentButton
+                commentFormContainer.style.display = 'none';  // Hide the commentFormContainer
+            });
+            submitButton.addEventListener('click', function () {
+                commentButton.style.display = 'block';  // Show the commentButton
+                commentFormContainer.style.display = 'none';  // Hide the commentFormContainer
+            });
+        });
+
+    </script>
+    <div class="row pt-5">
+        <div class="col">
+            <button id="commentButton" class="btn btn-outline-primary" style="display: block">Додати новий коментар
+            </button>
+
+            <div id="commentFormContainer" style="display: none; width: 35%">
+
+                <form method="POST" action="{% url 'create_comment' %}">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <button class="btn btn-outline-primary" id="submitButton" type="submit">Опублікувати</button>
+                    <button class="btn btn-outline-secondary" id="cancelButton" type="button">Cancel</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% for comment in comments %}
+        <div class="row pt-5">
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const commentButton = document.getElementById('replyButton{{ comment.pk }}');
+                    const commentFormContainer = document.getElementById('replyFormContainer{{ comment.pk }}');
+                    const cancelButton = document.getElementById('replyCancelButton{{ comment.pk }}');
+
+                    commentButton.addEventListener('click', function () {
+                        commentFormContainer.style.display = 'block';
+                    });
+
+                    cancelButton.addEventListener('click', function () {
+                        commentFormContainer.style.display = 'none';
+
+
+                    });
+                    commentButton.addEventListener('click', function () {
+                        commentButton.style.display = 'none';  // Hide the commentButton
+                        commentFormContainer.style.display = 'block';  // Show the commentFormContainer
+                    });
+
+                    cancelButton.addEventListener('click', function () {
+                        commentButton.style.display = 'block';  // Show the commentButton
+                        commentFormContainer.style.display = 'none';  // Hide the commentFormContainer
+                    });
+
+                    submitButton.addEventListener('click', function () {
+                        commentButton.style.display = 'block';  // Show the commentButton
+                        commentFormContainer.style.display = 'none';  // Hide the commentFormContainer
+                    });
+                });
+
+
+            </script>
+            <div class="col">
+                <div class="card">
+                    <h7 class="card-header">{{ comment.created_at|date:"d.m.Y" }}
+                        о {{ comment.created_at|time:"h:i" }}</h7>
+                    <div class="card-body">
+                        <h6 class="card-title">{{ comment.user_name }}</h6>
+                        <p class="card-text">{{ comment.text }}</p>
+                        {#                            <a href="#" class="btn btn-primary">Go somewhere</a>#}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% for reply in comment.replies.all %}
+            <div class="row pt-1">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">{{ reply.created_at|date:"d.m.Y" }}
+                            о {{ reply.created_at|time:"h:i" }}</div>
+                        <div class="card-body">
+                            <h5>{{ reply.user_name }} </h5>
+                            <p class="card-text">{{ reply.text }}</p></div>
+                    </div>
+                </div>
+            </div>
+
+
+        {% endfor %}
+        <div class="col pt-2">
+            <button id="replyButton{{ comment.pk }}" class="btn btn-outline-primary">Відповісти</button>
+        </div>
+        <hr>
+        <div id="replyFormContainer{{ comment.pk }}" style="display: none; width: 35%">
+
+            <form method="POST" action="{% url 'create_reply' comment.id %}">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <button class="btn btn-outline-primary" type="submit">Відповісти</button>
+                <button class="btn btn-outline-secondary" id="replyCancelButton{{ comment.pk }}" type="button">
+                    Відмінити
+                </button>
+
+            </form>
+        </div>
+
+    {% endfor %}
+    {% if page_obj.paginator.page_range > 2 %}
+        <nav id="paginator" aria-label="...">
+            <ul class="pagination">
+                {% for page in page_obj.paginator.page_range %}
+                    {% if page_obj.number == page %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ page }}</span>
+                            {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+</body>
+
+</html>
