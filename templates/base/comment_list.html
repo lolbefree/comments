@@ -1,0 +1,84 @@
+{% extends 'base/base.html' %}
+{% block title %}Comments{% endblock %}
+{% block content %}
+
+
+
+    <div class="container">
+        {% load django_bootstrap5 %}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+        <div class="row pt-5 pb-5">
+            <div class="col">
+                <a href="{% url 'add_comment' %}" class="btn btn-outline-primary">Додати новий коментар</a>
+
+
+            </div>
+        </div>
+        <form method="POST" action="{% url 'list_of_comments' %}">
+            {% csrf_token %}
+            <select class="form-select" name="select_value">
+                <option value="user_name">По імені користувача</option>
+                <option value="email">email</option>
+                <option value="-created_at" name="select_value">По даті</option>
+            </select>
+            <button type="submit" class="btn btn-outline-primary mt-2">Сортувати</button>
+        </form>
+
+        {% bootstrap_messages %}
+        {% for comment in page_obj %}
+
+            <div class="row pt-2">
+
+                <div class="col">
+                    <div class="card">
+                        <h7 class="card-header">{{ comment.created_at|date:"d.m.Y" }}
+                            о {{ comment.created_at|time:"h:i" }}</h7>
+                        <div class="card-body">
+                            <h6 class="card-title">{{ comment.user_name }}</h6>
+                            <p class="card-text">{{ comment.text }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% for reply in comment.replies.all %}
+                <div class="row pt-1">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header">{{ reply.created_at|date:"d.m.Y" }}
+                                о {{ reply.created_at|time:"h:i" }}</div>
+                            <div class="card-body">
+                                <h5>{{ reply.user_name }} </h5>
+                                <p class="card-text">{{ reply.text }}</p></div>
+                        </div>
+                    </div>
+                </div>
+                {##}
+            {% endfor %}
+            <div class="col pt-2">
+                <a href="{% url 'create_reply' comment.pk %}" id="replyButton{{ comment.pk }}"
+                   class="btn btn-outline-primary">Відповісти</a>
+            </div>
+            <hr>
+        {% endfor %}
+        <nav id="paginator" aria-label="...">
+            <ul class="pagination">
+                {% for page in page_obj.paginator.page_range %}
+                    {% if page_obj.number == page %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ page }}</span>
+                            {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+
+    </div>
+
+
+{% endblock content %}
+
+

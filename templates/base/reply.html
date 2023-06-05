@@ -1,15 +1,27 @@
-<h3>{{ comment.text }}</h3>
+{% extends 'base/base.html' %}
+{% block head %}{% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %} {% endblock %}
+{% block title %}Comments{% endblock %}
+{% block content %}
+    <div class="commentFormContainer">
+        <div class="comment">
+            <div class="comment-header position-sticky align-items-center">
+                <h4 class="comment-author">{{ comment.user_name }}</h4>
+                <span class="comment-date">{{ comment.created_at|date:"M d, Y" }}</span>
+            </div>
+            <div class="comment-body">
+                <p> {{ comment.text }} </p>
+            </div>
+        </div>
+        <hr>
 
-<ul>
-  {% for reply in replies %}
-    <li>{{ reply.text }}</li>
-  {% empty %}
-    <li>No replies yet.</li>
-  {% endfor %}
-</ul>
+        <form method="POST" action="{% url 'create_reply' comment.id %}">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-outline-primary" id="cancelButton">Відповісти</button>
+            <a href="{% url 'list_of_comments' %}" class="btn btn-outline-secondary" id="cancelButton" type="button">Повернутися</a>
 
-<form method="POST" action="{% url 'create_reply' comment.id %}">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Reply</button>
-</form>
+        </form>
+    </div>
+{% endblock %}

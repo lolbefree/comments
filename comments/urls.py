@@ -14,24 +14,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
-from django.urls import path
-from base.views import create_comment, create_reply
+from django.urls import path, include
+from base.views import ListOfComments, create_reply, add_comment
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
 
-    path('', create_comment, name='create_comment'),
+    path('add_comment/', add_comment, name='add_comment'),
+    path('captcha/', include('captcha.urls')),
+    path('', ListOfComments.as_view(), name='list_of_comments'),
     path('reply/<int:comment_id>/', create_reply, name='create_reply'),
 
 ]
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 else:
     urlpatterns += staticfiles_urlpatterns()
-

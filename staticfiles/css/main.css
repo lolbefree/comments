@@ -1,0 +1,14 @@
+p{
+    text-align: justify;
+}
+form{
+    padding-top: 30px;
+}
+#paginator{
+    padding-top: 25px;
+}
+
+.commentFormContainer{
+    display: block; width: 35%;
+    background: #1b1b1b;
+}

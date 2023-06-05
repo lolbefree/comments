@@ -1,11 +1,14 @@
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from .models import Comment, Reply
 from .forms import CommentForm, ReplyForm
 from django.core.paginator import Paginator
+from django.contrib import messages
+from django.views.generic import ListView
 
 
-def create_comment(request):
+def add_comment(request):
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -14,24 +17,44 @@ def create_comment(request):
     else:
         form = CommentForm()
 
-    comments = Comment.objects.all().order_by("created_at")
-    comments_per_page = 25
-    paginator = Paginator(comments, comments_per_page)
-    page_num = request.GET.get('page', 1)
-    page_objects = paginator.get_page(page_num)
-
-    print(paginator.num_pages)
     context = {
         'form': form,
-        'comments': page_objects,
-        'page_obj': page_objects,
     }
+    return render(request, 'base/add_comment.html', context)
 
-    return render(request, 'base/comment.html', context)
+
+class ListOfComments(ListView):
+    paginate_by = 25
+    model = Comment
+    ordering = ['-pk']
+
+    def post(self, request):
+        selected_value = request.POST.get('select_value')
+        comments = Comment.objects.all().order_by(selected_value)
+        paginator = Paginator(comments, self.paginate_by)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        return render(request, 'base/comment_list.html', {'page_obj': page_obj})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['paginate_by'] = self.paginate_by
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.prefetch_related('replies')
+        return queryset
+
+    def get_ordering(self):
+        ordering = self.request.GET.get('ordering', '-id')
+        # validate ordering here
+        return ordering
 
 
 def create_reply(request, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)
+    form = ReplyForm()
 
     if request.method == 'POST':
         form = ReplyForm(request.POST)
@@ -40,15 +63,13 @@ def create_reply(request, comment_id):
             reply.comment = comment
             reply.save()
             return HttpResponseRedirect('/')
-    else:
-        form = ReplyForm()
 
-    replies = comment.replies.all().order_by('-pk')
+        else:
+            form = ReplyForm()
 
     context = {
         'form': form,
         'comment': comment,
-        'replies': replies
     }
 
     return render(request, 'base/reply.html', context)
