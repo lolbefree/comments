@@ -19,9 +19,11 @@ from base.views import ListOfComments, create_reply, add_comment
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.contrib import admin
 
 urlpatterns = [
 
+    path('admin/', admin.site.urls),
     path('add_comment/', add_comment, name='add_comment'),
     path('captcha/', include('captcha.urls')),
     path('', ListOfComments.as_view(), name='list_of_comments'),
@@ -31,5 +33,6 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 else:
     urlpatterns += staticfiles_urlpatterns()

@@ -7,12 +7,12 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 from django.views.generic import ListView
 
-
 def add_comment(request):
     if request.method == 'POST':
-        form = CommentForm(request.POST)
+        form = CommentForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            comment = form.save(commit=False)
+            comment.save()
             return HttpResponseRedirect('/')
     else:
         form = CommentForm()
@@ -27,6 +27,7 @@ class ListOfComments(ListView):
     paginate_by = 25
     model = Comment
     ordering = ['-pk']
+
 
     def post(self, request):
         selected_value = request.POST.get('select_value')
@@ -57,7 +58,7 @@ def create_reply(request, comment_id):
     form = ReplyForm()
 
     if request.method == 'POST':
-        form = ReplyForm(request.POST)
+        form = ReplyForm(request.POST, request.FILES)
         if form.is_valid():
             reply = form.save(commit=False)
             reply.comment = comment

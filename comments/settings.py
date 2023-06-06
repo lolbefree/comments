@@ -25,7 +25,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 SECRET_KEY = 'django-insecure-+^y@3u58avk1ej+tlnnoq61_hen&tdkl7yczd%c%6+7p&8fz4j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 0
+DEBUG = 1
 
 ALLOWED_HOSTS = ['*']
 
@@ -42,8 +42,14 @@ INSTALLED_APPS = [
     'base',
     'django_bootstrap5',
     'captcha',
-
+    'ckeditor',
 ]
+CKEDITOR_CONFIGS = {
+    'default': {
+        'allowedContent': True,
+        'extraAllowedContent': 'a[href,title],code,i,strong',
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -136,8 +142,11 @@ if DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 else:
     STATIC_ROOT = 'staticfiles'
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 CAPTCHA_NOISE_FUNCTIONS = None
 
+BLEACH_ALLOWED_TAGS = ['a', 'code', 'i', 'strong']
+BLEACH_ALLOWED_ATTRIBUTES = {'a': ['href', 'title']}

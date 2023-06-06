@@ -24,7 +24,6 @@
             </select>
             <button type="submit" class="btn btn-outline-primary mt-2">Сортувати</button>
         </form>
-
         {% bootstrap_messages %}
         {% for comment in page_obj %}
 
@@ -35,8 +34,22 @@
                         <h7 class="card-header">{{ comment.created_at|date:"d.m.Y" }}
                             о {{ comment.created_at|time:"h:i" }}</h7>
                         <div class="card-body">
+                            <div class="media">
+
+                                <div class="media-body"></div>
+                            </div>
                             <h6 class="card-title">{{ comment.user_name }}</h6>
-                            <p class="card-text">{{ comment.text }}</p>
+                                        {% if comment.upload %}
+    {% if comment.upload.name|slice:"-3:" == "txt" %}
+        <a href="{{ comment.upload.url }}" download>Завантажити файл</a>
+    {% else %}
+        <img src="{{ comment.upload.url }}" alt="Image">
+    {% endif %}
+{% endif %}
+                            <p class="card-text">{% autoescape off %}{{ comment.text }}{% endautoescape %}</p>
+
+
+
                         </div>
                     </div>
                 </div>
@@ -49,8 +62,16 @@
                             <div class="card-header">{{ reply.created_at|date:"d.m.Y" }}
                                 о {{ reply.created_at|time:"h:i" }}</div>
                             <div class="card-body">
+
                                 <h5>{{ reply.user_name }} </h5>
-                                <p class="card-text">{{ reply.text }}</p></div>
+                                                                                        {% if reply.upload %}
+    {% if reply.upload.name|slice:"-3:" == "txt" %}
+        <a href="{{ reply.upload.url }}" download>Завантажити файл</a>
+    {% else %}
+        <img src="{{ reply.upload.url }}" alt="Image">
+    {% endif %}
+{% endif %}
+                                <p class="card-text">{% autoescape off %}{{ reply.text }} {% endautoescape %}</p></div>
                         </div>
                     </div>
                 </div>
