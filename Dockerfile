@@ -2,7 +2,8 @@ FROM python:3.9-slim-buster
 
 # Install Python dependencies
 COPY requirements.txt /app/requirements.txt
-RUN apt-get -y install libz-dev libjpeg-dev libfreetype6-dev python-dev
+
+RUN apt-get update && apt-get -y install libz-dev libjpeg-dev libfreetype6-dev python-dev
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r /app/requirements.txt
 
